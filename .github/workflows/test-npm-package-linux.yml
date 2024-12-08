@@ -1,0 +1,106 @@
+name: Test NPM Package (Linux) 🐧
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+
+    steps:
+    - name: 📁 Checkout code
+      uses: actions/checkout@v4   
+
+    - name: 📦 Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: "npm"      
+        
+    - name: 📦 Install dependencies
+      run: npm install      
+      
+    - name: 🚀 Build the project
+      run: npm run build      
+
+    - name: 🏗️ Ensure main entry (dist/index.js) runs without errors
+      id: main_entry
+      run: |
+        node dist/index.js      
+
+    - name: 🏗️ Ensure module entry (dist/index.mjs) runs without errors
+      id: module_entry
+      run: |
+        node --experimental-modules dist/index.mjs      
+
+    - name: 🔄 Check for outdated dependencies
+      id: outdated_deps
+      run: |
+        npm outdated > outdated.txt || true
+      continue-on-error: true     
+
+    - name: 🔒 Check for security risks
+      id: audit
+      run: npm audit --production --json > audit-result.json
+      continue-on-error: true 
+
+    - name: 📣 Send Slack Message
+      continue-on-error: true
+      if: always()
+      run: |
+        COMMIT_MESSAGE="${{ github.event.head_commit.message }}"
+        WORKFLOW_NAME="${{ github.workflow }} (Linux)"
+        RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        COMMIT_AUTHOR="${{ github.actor }}"
+        COMMIT_DATE="${{ github.event.head_commit.timestamp }}"
+        JOB_STATUS="${{ job.status }}"
+
+        # Get outdated dependencies
+        OUTDATED_DEPS=$(cat outdated.txt || echo "No outdated dependencies detected.")
+
+        # Get security audit results
+        SECURITY_AUDIT=$(cat audit-result.json | jq -r '.advisories | to_entries | map("*\(.value.module_name)*: \(.value.severity), \(.value.title) - \(.value.url)") | join("\n")' || echo "No vulnerabilities found.")
+
+        # Get build duration
+        DURATION=$(($SECONDS / 60))
+
+        # Construct Slack message with improved formatting
+        SLACK_MESSAGE="*🚀 Workflow Summary: ${WORKFLOW_NAME}*\n"
+        SLACK_MESSAGE+="\n*📅 Commit Details:*\n"
+        SLACK_MESSAGE+="• *Commit Message*: ${COMMIT_MESSAGE}\n"
+        SLACK_MESSAGE+="• *Commit Author*: ${COMMIT_AUTHOR}\n"
+        SLACK_MESSAGE+="• *Commit Date*: ${COMMIT_DATE}\n"
+        SLACK_MESSAGE+="\n*⏳ Build Duration:*\n"
+        SLACK_MESSAGE+="• *Duration*: ${DURATION} minutes\n"
+        
+        if [[ "${JOB_STATUS}" == "success" ]]; then
+          SLACK_MESSAGE+="\n*🔄 Outdated Dependencies:*\n"
+          SLACK_MESSAGE+="\`\`\`${OUTDATED_DEPS}\`\`\`\n"
+          SLACK_MESSAGE+="\n*🔒 Security Audit Results:*\n"
+          SLACK_MESSAGE+="\`\`\`${SECURITY_AUDIT}\`\`\`\n"
+          SLACK_MESSAGE+="\n*🔗 Full Workflow Details:* \n> *[View Workflow Run](${RUN_URL})*\n*🌟 Status: Success* 🎉"
+        elif [[ "${JOB_STATUS}" == "failure" ]]; then
+          SLACK_MESSAGE+="\n*🔄 Outdated Dependencies:*\n"
+          SLACK_MESSAGE+="\`\`\`${OUTDATED_DEPS}\`\`\`\n"
+          SLACK_MESSAGE+="\n*🔒 Security Audit Results:*\n"
+          SLACK_MESSAGE+="\`\`\`${SECURITY_AUDIT}\`\`\`\n"
+          SLACK_MESSAGE+="\n*🔗 Full Workflow Details:* \n> *[View Workflow Run](${RUN_URL})*\n*🌟 Status: Failed* 😞"
+        else
+          SLACK_MESSAGE+="\n*⚠️ Unexpected Error:*\n> Something went wrong. Please investigate manually."
+        fi
+
+        # Send message to Slack
+        curl -X POST --data-urlencode "payload={ 
+          \"channel\": \"#proj-create-npm-package\", 
+          \"username\": \"Package Testing Bot (Linux)\", 
+          \"text\": \"$SLACK_MESSAGE\", 
+          \"icon_emoji\": \":robot_face:\"
+        }" ${{ secrets.SLACK_WEBHOOK_URL }}
