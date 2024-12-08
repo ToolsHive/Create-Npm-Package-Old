@@ -2,6 +2,8 @@
 <br>
 
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
+[![CodeQL Security Analysis](https://github.com/ToolsHive/Create-Npm-Package/actions/workflows/codeql.yml/badge.svg)](https://github.com/ToolsHive/Create-Npm-Package/actions/workflows/codeql.yml)
+[![Dependabot Updates](https://github.com/ToolsHive/Create-Npm-Package/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/ToolsHive/Create-Npm-Package/actions/workflows/dependabot/dependabot-updates)
 ![GitHub last commit](https://img.shields.io/github/last-commit/ToolsHive/Create-Npm-Package)
 ![Windows](https://img.shields.io/badge/platform-windows-blue)
 ![Linux](https://img.shields.io/badge/platform-linux-yellowgreen)

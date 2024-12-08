@@ -1,0 +1,52 @@
+name: '🔍 Dependency Review'
+
+on:
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - "package.json"
+      - "package-lock.json"
+
+  schedule:
+    - cron: '34 5 * * 1'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  dependency-review:
+    name: "🔒 Review Dependencies for Vulnerabilities 🚫"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: '🔄 Checkout repository'
+        uses: actions/checkout@v4
+
+      - name: '🔎 Perform Dependency Review'
+        uses: actions/dependency-review-action@v4
+        with:
+          comment-summary-in-pr: always
+          fail-on-severity: high 
+          deny-licenses: GPL-1.0-or-later, LGPL-2.0-or-later
+          retry-on-snapshot-warnings: true
+
+      - name: '📨 Notify on high severity vulnerabilities'
+        if: failure()
+        run: |
+          echo "🚨 High severity vulnerabilities found in dependencies, please review!"
+
+          # Fetch commit details
+          COMMIT_AUTHOR=$(git log -1 --pretty=format:'%an')
+          COMMIT_TIME=$(git log -1 --pretty=format:'%cd' --date=short)
+          COMMIT_MESSAGE=$(git log -1 --pretty=format:'%s')
+          COMMIT_URL="https://github.com/${{ github.repository }}/commit/$(git log -1 --pretty=format:'%H')"
+
+          # Send a formatted message to Slack
+          curl -X POST --data-urlencode "payload={
+            \"channel\": \"#proj-create-npm-package\",
+            \"username\": \"Dependency-Review-Bot\",
+            \"text\": \"*🚨 High severity vulnerabilities detected in your dependencies!*\n\n*Commit Information:*\n*Author:* ${COMMIT_AUTHOR}\n*Date:* ${COMMIT_TIME}\n*Commit Message:* ${COMMIT_MESSAGE}\n*Commit Link:* <${COMMIT_URL}|View Commit>\n\n*🔒 Affected Dependencies:* Please review the dependencies with high-severity vulnerabilities. These need immediate attention!\n\n*🚫 Action Required:* Please fix the vulnerabilities or consider updating the affected packages.\n\n🔍 *For more details, visit the Dependency Review report!* \n\n :warning: *High Risk! Immediate action needed.*",
+            \"icon_emoji\": \":warning:\"
+          }" ${{ secrets.SLACK_WEBHOOK_URL }}
+
