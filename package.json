@@ -1,0 +1,87 @@
+{
+  "name": "@toolshive/create-npm-package",
+  "version": "0.0.0",
+  "description": "A CLI tool for creating starter templates for npm packages using TypeScript or JavaScript, tailored to simplify package development.",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "create-npm-package": "./dist/index.js"
+  },
+  "scripts": {
+    "start": "node dist/index.js",
+    "build": "tsup",
+    "build:prod": "tsup --minify",
+    "watch": "tsup --watch",
+    "lint": "eslint src/**/*.ts",
+    "format": "prettier 'src/**/*'",
+    "lint:fix": "eslint --fix src/**/*.ts",
+    "format:fix": "prettier --write 'src/**/*'",
+    "audit": "npm audit",
+    "audit:fix": "npm audit --fix",
+    "update": "npm update",
+    "outdated": "npm outdated",
+    "check": "npx depcheck",
+    "clean": "npm cache clean --force",
+    "rebuild": "rm -rf node_modules && npm install",
+    "commit": "cz",
+    "prepare": "husky"
+  },
+  "keywords": [
+    "npm",
+    "typescript",
+    "javascript",
+    "starter-template",
+    "cli",
+    "command-line-tool"
+  ],
+  "devDependencies": {
+    "@commitlint/cli": "^19.6.0",
+    "@commitlint/config-conventional": "^19.6.0",
+    "@types/node": "^22.10.1",
+    "@typescript-eslint/eslint-plugin": "^8.17.0",
+    "@typescript-eslint/parser": "^8.17.0",
+    "commitizen": "^4.3.1",
+    "cz-conventional-changelog": "^3.3.0",
+    "eslint": "^9.16.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.2.10",
+    "prettier": "^3.4.2",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=18.20.1",
+    "npm": ">=9.2.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npx lint-staged",
+      "prepare-commit-msg": "exec < /dev/tty && npx git-cz --hook || true",
+      "commit-msg": "npx commitlint --edit $1 "
+    }
+  },
+  "lint-staged": {
+    "*.ts": [
+      "npm run format",
+      "npm run lint"
+    ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "author": "Armoghan-ul-Mohmin",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ToolsHive/Create-Npm-Package.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ToolsHive/Create-Npm-Package/issues"
+  },
+  "homepage": "https://github.com/ToolsHive/Create-Npm-Package#readme"
+}

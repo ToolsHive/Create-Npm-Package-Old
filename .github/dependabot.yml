@@ -1,0 +1,26 @@
+# 🛠️ Dependabot configuration file for keeping dependencies up-to-date 🚀
+version: 2
+updates:
+  # 📦 NPM Dependencies
+  - package-ecosystem: "npm" 
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    allow:
+      - dependency-type: "all"
+
+  # 🐳 Devcontainer Dependencies
+  - package-ecosystem: "devcontainers" 
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    allow:
+      - dependency-type: "all"
+
+  # 🔐 GitHub Actions Dependencies
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    allow:
+      - dependency-type: "all"

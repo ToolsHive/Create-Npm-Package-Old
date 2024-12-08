@@ -1,0 +1,95 @@
+// **************************************
+// * Tasks Configuration                *
+// * Project: npm-package-starter       *
+// * Description: This configuration    *
+// * defines a series of tasks for      *
+// * managing and building the project. *
+// **************************************
+
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Start ",
+            "type": "shell",
+            "command": "npm start",
+            "problemMatcher": [],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "isBackground": false
+        },
+        {
+            "label": "Build Project",
+            "type": "shell",
+            "command": "npm run build",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "isBackground": false
+        },
+        {
+            "label": "Audit Dependencies",
+            "type": "shell",
+            "command": "npm run audit",
+            "problemMatcher": [],
+            "group": {
+                "isDefault": true
+            },
+            "isBackground": false
+        },
+        {
+            "label": "Audit Dependencies and Fix",
+            "type": "shell",
+            "command": "npm run audit:fix",
+            "problemMatcher": [],
+            "group": {
+                "isDefault": false
+            },
+            "isBackground": false
+        },
+        {
+            "label": "Update Dependencies",
+            "type": "shell",
+            "command": "npm update",
+            "problemMatcher": [],
+            "group": {
+                "isDefault": false
+            },
+            "isBackground": false
+        },
+        {
+            "label": "Check for Unused Dependencies",
+            "type": "shell",
+            "command": "npm run check",
+            "problemMatcher": [],
+            "group": {
+                "isDefault": false
+            },
+            "isBackground": false
+        },
+        {
+            "label": "Clean NPM Cache",
+            "type": "shell",
+            "command": "npm run clean",
+            "problemMatcher": [],
+            "group": {
+                "isDefault": true
+            },
+            "isBackground": false
+        },
+        {
+            "label": "Rebuild Node Modules",
+            "type": "shell",
+            "command": "npm run rebuild",
+            "problemMatcher": [],
+            "group": {
+                "isDefault": false
+            },
+            "isBackground": false
+        }
+    ]
+}
