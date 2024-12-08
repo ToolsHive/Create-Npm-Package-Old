@@ -1,0 +1,11 @@
+# Exclude everything except dist, README.md, and LICENSE
+src/
+node_modules/
+package-lock.json
+tsconfig.json
+eslint.config.mjs
+commitlint.config.js
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
+SECURITY.md
+tsup.config.ts
